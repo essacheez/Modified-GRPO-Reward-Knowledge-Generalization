@@ -9,33 +9,32 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/Status-In%20Progress-orange.svg)]()
 
-
 </div>
 
 ---
 
 ## 🎯 Overview
 
-Small language models often struggle to generalize from new information.  
+Small language models often struggle to generalize from new information.
 
-For example, if you finetune a 3B model on a specific fact and then ask the exact question it was trained on, it may answer correctly. But if you rephrase the question slightly, the model usually fails. The issue is that supervised finetuning typically teaches the model a mapping between specific question patterns and answers. The model may memorize the surface forms of the training data rather than fully internalizing the underlying fact. This limitation becomes evident when testing with held-out rephrasings: a model that performs well on the training distribution can perform much worse on semantically equivalent questions expressed differently.  
+For example, if you finetune a 3B model on a specific fact and then ask the exact question it was trained on, it may answer correctly. But if you rephrase the question slightly, the model usually fails. The issue is that supervised finetuning typically teaches the model a mapping between specific question patterns and answers. The model may memorize the surface forms of the training data rather than fully internalizing the underlying fact. This limitation becomes evident when testing with held-out rephrasings: a model that performs well on the training distribution can perform much worse on semantically equivalent questions expressed differently.
 
-Consider a simple fact:  
+Consider a simple fact:
 
 > "A 6.2 magnitude earthquake struck Myanmar on March 28, 2025."
 
-A finetuned model might correctly answer:  
+A finetuned model might correctly answer:
 
-- "What magnitude earthquake hit Myanmar in March 2025?"  
+- "What magnitude earthquake hit Myanmar in March 2025?"
 
-But struggle with variations such as:  
+But struggle with variations such as:
 
-- **Linguistic variations:** "How strong was the seismic event in Myanmar during late March 2025?"  
-- **Structural differences:** "Myanmar experienced an earthquake in March 2025, what was its magnitude?"  
+- **Linguistic variations:** "How strong was the seismic event in Myanmar during late March 2025?"
+- **Structural differences:** "Myanmar experienced an earthquake in March 2025, what was its magnitude?"
 
-All of these refer to the same fact, but the model may treat them differently due to surface-level differences.  
+All of these refer to the same fact, but the model may treat them differently due to surface-level differences.
 
-This effect is more pronounced in smaller models. While very large models  generalize across some variations, smaller models are more likely to overfit to the patterns seen during training. Since smaller models are often the ones used in practical deployments, finding a way around these limitations is important when considering their reliability.
+This effect is more pronounced in smaller models. While very large models generalize across some variations, smaller models are more likely to overfit to the patterns seen during training. Since smaller models are often the ones used in practical deployments, finding a way around these limitations is important when considering their reliability.
 
 > **Core Hypothesis**: Updating the reward structure to add a group reward for generalization inaddtion to consistency across multiple phrasings of the same question in GRPO will force models to build robust internal representations and enable OOD generalization.
 
@@ -43,18 +42,17 @@ This effect is more pronounced in smaller models. While very large models  gener
 
 ## 🔬 The Approach
 
-
 ### Stage 1: Novel Data Collection
-We source news from the **GDELT Project** published after April 2025, information models have definitely never seen. We filter for unpredictable events using keywords like *abrupt*, *earthquake*, *unprecedented*, *sinkhole* to ensure genuine novelty. We collect a total of **3,200 atomic facts** from Yahoo News
 
+We source news from the **GDELT Project** published after April 2025, information models have definitely never seen. We filter for unpredictable events using keywords like _abrupt_, _earthquake_, _unprecedented_, _sinkhole_ to ensure genuine novelty. We collect a total of **3,200 atomic facts** from Yahoo News
 
 ### Stage 2: Question Diversification
+
 For each fact, we generate **7 distinct question phrasings** with minimal lexical overlap using GPT-4o mini (Average BLEU: **0.2**, Average Jaccard: **0.31**). This confirms real linguistic diversity, not surface-level rewording.
 
-
 ### Stage 3: Supervised Finetuning
-We finetune **Qwen 2.5** (3B and 7B) on 5 of 7 phrasings per fact, holding out 2 for evaluation. This establishes baseline internalization levels.
 
+We finetune **Qwen 2.5** (3B and 7B) on 5 of 7 phrasings per fact, holding out 2 for evaluation. This establishes baseline internalization levels.
 
 ### Stage 4: GRPO Training
 
@@ -70,8 +68,7 @@ GRPO training using all 5 question phrasings per fact. Tests whether exposing th
 
 **Configuration 3 — Modified Reward Structure**
 
-Our core contribution. Same 5 rephrasings, but we modify GRPO's reward to explicitly add a generalization reward. The higher the correctly answered rephrases in the group by the model the higher the reward 
-
+Our core contribution. Same 5 rephrasings, but we modify GRPO's reward to explicitly add a generalization reward. The higher the correctly answered rephrases in the group by the model the higher the reward
 
 **🚧 Currently in development**
 
@@ -89,17 +86,16 @@ Evaluation on **300 held-out facts** with 2 question phrasings each:
 
 <div align="center">
 
-| Model & Setting | Both Correct ↑ | One Correct |
-|:----------------|:--------------:|:-----------:|
-| Qwen 3B Base | 0.67% | 2.00% |
-| **Qwen 3B SFT Questions (5 rephrasings)** | **74.00%** | 24.00% |
-| Qwen 3B SFT Question 1 Repeat (same q × 5) | 10.00% | 25.33% |
-| Qwen 3B SFT Question No Repeat | 4.00% | 16.33% |
-| Qwen 3B SFT Question No Repeat Equal Steps | 7.00% | 29.00% |
-| Qwen 3B SFT Fact 1 Repeat | 4.33% | 14.67% |
-| Qwen 3B SFT Fact No Repeat | 1.67% | 11.33% |
-| **Qwen 7B SFT Questions** | **81.33%** | 17.00% |
-
+| Model & Setting                            | Both Correct ↑ | One Correct |
+| :----------------------------------------- | :------------: | :---------: |
+| Qwen 3B Base                               |     0.67%      |    2.00%    |
+| **Qwen 3B SFT Questions (5 rephrasings)**  |   **74.00%**   |   24.00%    |
+| Qwen 3B SFT Question 1 Repeat (same q × 5) |     10.00%     |   25.33%    |
+| Qwen 3B SFT Question No Repeat             |     4.00%      |   16.33%    |
+| Qwen 3B SFT Question No Repeat Equal Steps |     7.00%      |   29.00%    |
+| Qwen 3B SFT Fact 1 Repeat                  |     4.33%      |   14.67%    |
+| Qwen 3B SFT Fact No Repeat                 |     1.67%      |   11.33%    |
+| **Qwen 7B SFT Questions**                  |   **81.33%**   |   17.00%    |
 
 </div> <p>
 
@@ -130,7 +126,7 @@ Evaluation on **300 held-out facts** with 2 question phrasings each:
 ### Prerequisites
 
 ```bash
-pip install transformers trl vllm accelerate wandb peft bitsandbytes
+pip install -r requirements.txt
 ```
 
 ### 1. Start the Reference Model Server
@@ -145,7 +141,7 @@ CUDA_VISIBLE_DEVICES=0 trl vllm-serve \
     --host 0.0.0.0
 ```
 
-### 2. Run Reward Model 
+### 2. Run Reward Model
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 vllm serve Qwen/Qwen2.5-3B-Instruct \
@@ -163,11 +159,11 @@ CUDA_VISIBLE_DEVICES=1,2,3 accelerate launch --num_processes=3 --mixed_precision
 
 ### 💻 Hardware Requirements
 
-| Task | GPU Memory | 
-|:-----|:-----------|
-| GRPO Training | ~100GB+ | 
-| SFT Training | ~24GB |
-| Inference | ~8GB | 
+| Task          | GPU Memory |
+| :------------ | :--------- |
+| GRPO Training | ~100GB+    |
+| SFT Training  | ~24GB      |
+| Inference     | ~8GB       |
 
 ---
 
@@ -235,7 +231,7 @@ This work builds on:
 
 <div align="center">
 
-## 📬 Contact 
+## 📬 Contact
 
 Questions? Open an issue or reach out directly.
 
