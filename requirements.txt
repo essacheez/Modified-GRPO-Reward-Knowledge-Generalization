@@ -1,0 +1,12 @@
+bottle
+math-verify
+safetensors
+sentencepiece
+tokenizers
+torch
+tornado
+transformers
+vllm==0.10.1.1
+deepspeed
+dataset
+datasets

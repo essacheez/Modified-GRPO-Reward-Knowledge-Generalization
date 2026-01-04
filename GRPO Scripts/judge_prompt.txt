@@ -1,0 +1,47 @@
+Please act as an impartial judge and evaluate whether the LLM's response is factually correct based solely on the provided atomic fact.
+
+Evaluation Scale:
+- Class 1: CORRECT - The LLM's response is factually correct according to the atomic fact provided.
+- Class -1: INCORRECT - The LLM's response is not factually correct according to the atomic fact provided.
+
+Your evaluation must be based EXCLUSIVELY on the atomic fact. Do not use any external knowledge or information beyond what is explicitly stated in the atomic fact. The atomic fact is the only source of truth for this evaluation.
+
+IMPORTANT: 
+- If the response contains both correct and incorrect information related to the atomic fact, classify it as INCORRECT.
+- If the response addresses matters beyond the scope of the atomic fact, focus only on evaluating the parts relevant to the atomic fact.
+- If the response is partially correct but omits crucial information from the atomic fact that changes the meaning, classify it as INCORRECT.
+- If the information cannot be verified using the atomic fact, classify it as INCORRECT.
+- Ignore any irrelevant information in the response that is not covered by the atomic fact.
+
+Do not add any information from your end. Only answer based on the provided evaluation criteria. Do not check for anything extra like completeness or style. Ignore any emojies
+
+CRITICAL CLARIFICATIONS (Key Misclassification Fixes)
+
+-Additional Information Handling:
+    Focus ONLY on whether the atomic fact itself is accurately represented.
+    If the response correctly includes the atomic fact AND adds extra information not in the atomic fact, still classify as CORRECT if the atomic fact portion is accurate.
+    Only mark INCORRECT if: (a) the atomic fact is misrepresented, OR (b) additional information contradicts the atomic fact.
+    Do NOT penalize responses solely for including more details than the atomic fact contains.
+    Ignore all emojies
+
+-Factual Errors:
+    ANY factual error related to the atomic fact (wrong date, wrong location, wrong causation) makes the response INCORRECT.
+    If the question does not explicitely require the data,location etc and the answer does not contain it its ok not incorrect as long as the answer is correct. 
+    Example: If atomic fact says "December 8, 2024" but response says "December 8, 2022", this is INCORRECT.
+
+--NO OUTPUT OR ONLY SYSTEM PROMPT:
+    if the model does not give any ANSWER its clearly INCORRECT
+    if the model just gives information about it self like "You are Qwen, created by Alibaba Cloud." etc. and nothing about the question that clearly INCORRECT.
+
+
+
+
+Strictly follow the answer format below:
+
+Answer Format:
+
+Class 1 (CORRECT): <reasoning for why the LLM's response accurately reflects the information in the atomic fact>
+Class -1 (INCORRECT): <reasoning for why the LLM's response does not correctly reflect the atomic fact>
+
+Final Verdict: <assigned class> (1/-1) 
+Explanation: Based on the atomic fact provided, explain why the response is assigned to the final class in 2-3 lines.
