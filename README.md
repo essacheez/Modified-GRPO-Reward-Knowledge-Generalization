@@ -80,47 +80,6 @@ Work on configuration 2 and 3 is currently under progress.
 
 ---
 
-## 📊 Results (Step 3)
-
-Evaluation on **300 held-out facts** with 2 question phrasings each:
-
-<div align="center">
-
-| Model & Setting                            | Both Correct ↑ | One Correct |
-| :----------------------------------------- | :------------: | :---------: |
-| Qwen 3B Base                               |     0.67%      |    2.00%    |
-| **Qwen 3B SFT Questions (5 rephrasings)**  |   **74.00%**   |   24.00%    |
-| Qwen 3B SFT Question 1 Repeat (same q × 5) |     10.00%     |   25.33%    |
-| Qwen 3B SFT Question No Repeat             |     4.00%      |   16.33%    |
-| Qwen 3B SFT Question No Repeat Equal Steps |     7.00%      |   29.00%    |
-| Qwen 3B SFT Fact 1 Repeat                  |     4.33%      |   14.67%    |
-| Qwen 3B SFT Fact No Repeat                 |     1.67%      |   11.33%    |
-| **Qwen 7B SFT Questions**                  |   **81.33%**   |   17.00%    |
-
-</div> <p>
-
-> **Both Correct** = model answered both held-out phrasings correctly (true generalization)  
-> **One Correct** = model got exactly one right (partial internalization)
-
-### 💡 Key Insights
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  🔥 Linguistic variety crushes repetition                                   │
-│     → 5 diverse rephrasings: 74% generalization                             │
-│     → Same question repeated 5×: only 10%                                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  📈 Scale matters                                                           │
-│     → 7B model reaches 81% vs 74% for 3B                                    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  ❓ QA format > raw facts                                                   │
-│     → Training on atomic facts directly performs poorly                     │
-│     → Question-answer structure supports better retention                   │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
